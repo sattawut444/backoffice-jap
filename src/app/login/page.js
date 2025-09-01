@@ -8,7 +8,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BAS
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: ''
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -47,14 +47,13 @@ export default function LoginPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: formData.email,
+          username: formData.username,
           password: formData.password
         }),
         signal: controller.signal
       });
       
       clearTimeout(timeoutId);
-
       if (!response.ok) {
         if (response.status === 401) {
           setErrorMessage('Email or password is incorrect. Please try again.');
@@ -67,39 +66,39 @@ export default function LoginPage() {
       }
 
       const result = await response.json();
-      
       // ตรวจสอบว่ามี token และ hotel_id ใน response หรือไม่
       if (result.tokenJWT && result.hotel_id) {
         // สร้างข้อมูล user จาก API response
         const userData = {
-          email: formData.email,
+          username: formData.username,
           name: `${result.firstname} ${result.lastname}`,
-          role: 'hotel',
+          role: result.type,
           hotel_id: result.hotel_id,
+          user_attraction_id: result.user_attraction_id,
           hotel_name: result.name
         };
         
         // ใช้ login function จาก AuthProvider
-        const success = login(formData.email, formData.password, result.tokenJWT, userData);
+        const success = login(formData.username, formData.password, result.tokenJWT, userData);
         if (!success) {
           setErrorMessage('An error occurred while logging in. Please try again.');
         }
       } else if (result.token && result.user) {
         // กรณีที่ API ส่งข้อมูลในรูปแบบเดิม
-        const success = login(formData.email, formData.password, result.token, result.user);
+        const success = login(formData.username, formData.password, result.token, result.user);
         if (!success) {
           setErrorMessage('An error occurred while logging in. Please try again.');
         }
       } else if (result.token && result.hotel_id) {
         // กรณีที่ API ส่ง token และ hotel_id แยกกัน
         const userData = {
-          email: formData.email,
+          email: formData.username,
           name: `${result.firstname} ${result.lastname}` || 'Admin User',
           role: result.role || 'hotel',
           hotel_id: result.hotel_id,
           hotel_name: result.hotel_name || 'Hotel Management'
         };
-        const success = login(formData.email, formData.password, result.token, userData);
+        const success = login(formData.username, formData.password, result.token, userData);
         if (!success) {
           setErrorMessage('An error occurred while logging in. Please try again.');
         }
@@ -128,13 +127,10 @@ export default function LoginPage() {
       <div className="max-w-md w-full animate-fade-in-up">
         {/* Logo and Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-gray-600 to-gray-700 rounded-2xl shadow-lg mb-4">
-            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
+          <div className="inline-flex items-center justify-center rounded-2xl shadow-lg mb-4">
+            {/* <img src="/svg-logo.svg" alt="Logo" className="w-18 h-18" /> */}
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">HotelPro</h1>
-          <p className="text-gray-600">{t('login')} {t('dashboard')}</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Login</h1>
         </div>
 
         {/* Login Form */}
@@ -154,8 +150,8 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-6 form-responsive">
             {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                {t('email')}
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+                Username
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -164,13 +160,13 @@ export default function LoginPage() {
                   </svg>
                 </div>
                 <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
+                  type="username"
+                  id="username"
+                  name="username"
+                  value={formData.username}
                   onChange={handleInputChange}
                   className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-200 text-gray-900 placeholder-gray-500 touch-target-responsive"
-                  placeholder="admin@hotelpro.com"
+                  placeholder="admin@gmail.com"
                   required
                 />
               </div>
@@ -179,7 +175,7 @@ export default function LoginPage() {
             {/* Password Field */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                {t('password')}
+              Password
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -229,14 +225,6 @@ export default function LoginPage() {
                   {t('login')}
                 </label>
               </div>
-              {/* <div className="text-sm">
-                <button 
-                  onClick={() => router.push('/forgot-password')}
-                  className="font-medium text-gray-600 hover:text-gray-500 transition-colors duration-200"
-                >
-                  Forgot password?
-                </button>
-              </div> */}
             </div>
 
             {/* Login Button */}

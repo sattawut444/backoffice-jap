@@ -78,24 +78,7 @@ export default function Home() {
         if (response.status === 404) {
           console.warn('Room API endpoint not found, using demo data');
           // ใช้ demo data แทน
-          const demoData = [
-            {
-              id: null,
-              hotels_plans_id: null,
-              room_code: null,
-              room_name: null,
-              room_type: null,
-              category: null,
-              facilities: null,
-              detail: null,
-              price: null,
-              number_beds: null,
-              number_guests: null,
-              all_room: null,
-              remaining_rooms: null,
-              status: 0
-            }
-          ];
+          const demoData = [];
           setData(demoData);
           setOriginalData(demoData); // บันทึกข้อมูลต้นฉบับ
           return;
@@ -400,7 +383,7 @@ export default function Home() {
             </div>
             <div className="flex items-center space-x-4">
               <Link 
-                href="/profile"
+                href="/hotel-profile"
                 className="flex items-center space-x-2 text-gray-700 hover:text-gray-900 transition-colors"
               >
                 <div className="flex items-center justify-center w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors touch-target-responsive">
@@ -427,7 +410,7 @@ export default function Home() {
               </div>
               <div>
                 <h2 className="text-xl font-bold text-gray-900">{t('search')}</h2>
-                <p className="text-sm text-gray-600 mt-1">ค้นหาห้องพักตามเงื่อนไขที่ต้องการ</p>
+                <p className="text-sm text-gray-600 mt-1">Search for rooms according to your desired conditions.</p>
               </div>
             </div>
           </div>
@@ -506,12 +489,12 @@ export default function Home() {
                   </div>
                   <div>
                     <h2 className="text-xl font-bold text-gray-900">{t('searchResults')}</h2>
-                    <p className="text-sm text-gray-600 mt-1">แสดงผลการค้นหาห้องพักทั้งหมด</p>
+                    <p className="text-sm text-gray-600 mt-1">Show all room search results.</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                    {data.length} รายการ
+                    {data.length} list
                   </span>
                 </div>
               </div>

@@ -77,11 +77,11 @@ export default function RoomDetailPage() {
     try {
       setLoading(true);
       setError(null);
-      
+      console.log("user.hotel_id: ",user.hotel_id)
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 วินาที timeout
       // console.log("all_rooms: ",all_room)
-      const response = await fetch(`${API_BASE_URL}/api/hotels/backoffice/roomlist/${room_code}`, {
+      const response = await fetch(`${API_BASE_URL}/api/hotels/backoffice/roomlist?room_code=${room_code}&hotel_id=${user.hotel_id}`, {
         signal: controller.signal
       });
       
@@ -872,7 +872,7 @@ export default function RoomDetailPage() {
                     </th>
                   </tr>
                 </thead>
-                                 <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white divide-y divide-gray-200">
                    {filteredRooms.map((item, index) => (
                      <tr key={item.id || index} className="hover:bg-gray-50">
                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -907,7 +907,7 @@ export default function RoomDetailPage() {
                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                          <div className="flex items-center space-x-2">
                            <Link
-                             href={`/edit-stock/${item.hotel_stock_id}?room_code=${room_code}&hotels_plans_id=${hotels_plans_id}`}
+                             href={`/edit-stock/${item.hotel_stock_id}?room_code=${room_code}&hotels_plans_id=${hotels_plans_id}&day_use=${item.day_use}&stock=${item.stock}&all_room=${item.all_room}`}
                              className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                            >
                              <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

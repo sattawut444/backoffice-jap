@@ -49,7 +49,7 @@ export default function Sidebar({ onClose }) {
         headers: { 'Content-Type': 'application/json' },
         method: 'GET'
       });
-      
+      console.log('user: ',user.role);
       // Fetch confirmed orders
       const confirmedResponse = await fetch(`${API_BASE_URL}/api/hotels/backoffice/orderconfirm/${user.hotel_id}`, {
         headers: { 'Content-Type': 'application/json' },
@@ -122,13 +122,11 @@ export default function Sidebar({ onClose }) {
         {/* Close button and logo */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
-            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-md mr-3">
-              <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-md mr-3">
+              <img src="/svg-logo.svg" alt="Logo" className="w-9 h-9" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white">HotelPro</h1>
+              <h1 className="text-xl font-bold text-white">{user.role === 'hotels' ? 'Hotel' : 'Attraction'}</h1>
               <p className="text-gray-300 text-xs">Management System</p>
             </div>
           </div>
@@ -145,6 +143,7 @@ export default function Sidebar({ onClose }) {
         
         {/* Navigation */}
         <nav className="space-y-1 flex-1">
+
           <button 
             onClick={() => handleNavigation('/hotel-profile')}
             className={`w-full flex items-center px-3 py-2 sm:px-4 sm:py-3 rounded-lg transition-all duration-200 touch-target-responsive ${
@@ -158,7 +157,8 @@ export default function Sidebar({ onClose }) {
             </svg>
             <span className={`text-sm ${isActive('/hotel-profile') ? 'font-semibold' : 'font-medium'}`}>{t('profile')}</span>
           </button>
-          
+
+{(user.role === 'hotels' || user.role === 'developer') && (
           <button 
             onClick={() => handleNavigation('/')}
             className={`w-full flex items-center px-3 py-2 sm:px-4 sm:py-3 rounded-lg transition-all duration-200 touch-target-responsive ${
@@ -173,7 +173,8 @@ export default function Sidebar({ onClose }) {
             </svg>
             <span className={`text-sm ${isActive('/') ? 'font-semibold' : 'font-medium'}`}>{t('dashboard')}</span>
           </button>
-          
+)}
+{(user.role === 'hotels' || user.role === 'developer') && (
           <button 
             onClick={() => handleNavigation('/add')}
             className={`w-full flex items-center px-3 py-2 sm:px-4 sm:py-3 rounded-lg transition-all duration-200 touch-target-responsive ${
@@ -187,21 +188,8 @@ export default function Sidebar({ onClose }) {
             </svg>
             <span className={`text-sm ${isActive('/add') ? 'font-semibold' : 'font-medium'}`}>{t('addRoom')}</span>
           </button>
-
-          {/* <button 
-            onClick={() => handleNavigation('/add-stock')}
-            className={`w-full flex items-center px-3 py-2 sm:px-4 sm:py-3 rounded-lg transition-all duration-200 touch-target-responsive ${
-              isActive('/add-stock') 
-                ? 'text-white bg-gray-700 border-l-4 border-white rounded-r-lg shadow-md' 
-                : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
-            }`}
-          >
-            <svg className="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-            </svg>
-            <span className={`text-sm ${isActive('/add-stock') ? 'font-semibold' : 'font-medium'}`}>{t('addStock')}</span>
-          </button> */}
-
+)}
+{(user.role === 'hotels' || user.role === 'developer') && (
           <button 
             onClick={() => handleNavigation('/orders')}
             className={`w-full flex items-center px-3 py-2 sm:px-4 sm:py-3 rounded-lg transition-all duration-200 touch-target-responsive ${
@@ -220,7 +208,38 @@ export default function Sidebar({ onClose }) {
               </span>
             )}
           </button>
-
+)}
+{(user.role === 'attraction' || user.role === 'developer') && (
+        <button 
+        onClick={() => handleNavigation('/scan-qr')}
+        className={`w-full flex items-center px-3 py-2 sm:px-4 sm:py-3 rounded-lg transition-all duration-200 touch-target-responsive ${
+          isActive('/scan-qr') 
+            ? 'text-white bg-gray-700 border-l-4 border-white rounded-r-lg shadow-md' 
+            : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
+        }`}
+      >
+        <svg className="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V6a1 1 0 00-1-1H5a1 1 0 00-1 1v1a1 1 0 001 1zm12 0h2a1 1 0 001-1V6a1 1 0 00-1-1h-2a1 1 0 00-1 1v1a1 1 0 001 1zM5 20h2a1 1 0 001-1v-1a1 1 0 00-1-1H5a1 1 0 00-1 1v1a1 1 0 001 1z" />
+        </svg>
+        <span className={`text-sm ${isActive('/scan-qr') ? 'font-semibold' : 'font-medium'}`}>Scan QR</span>
+      </button>
+)}
+{(user.role === 'attraction' || user.role === 'developer') && (
+          <button 
+            onClick={() => handleNavigation('/order-attraction')}
+            className={`w-full flex items-center px-3 py-2 sm:px-4 sm:py-3 rounded-lg transition-all duration-200 touch-target-responsive ${
+              isActive('/order-attraction') 
+                ? 'text-white bg-gray-700 border-l-4 border-white rounded-r-lg shadow-md' 
+                : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
+            }`}
+          >
+            <svg className="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9m0 9c-5 0-9-4-9-9s4-9 9-9" />
+            </svg>
+            <span className={`text-sm ${isActive('/order-attraction') ? 'font-semibold' : 'font-medium'}`}>Attraction Orders</span>
+          </button>
+)}
+{(user.role === 'hotels' || user.role === 'developer') && (
           <button 
             onClick={() => handleNavigation('/confirmed-orders')}
             className={`w-full flex items-center px-3 py-2 sm:px-4 sm:py-3 rounded-lg transition-all duration-200 touch-target-responsive ${
@@ -234,7 +253,8 @@ export default function Sidebar({ onClose }) {
             </svg>
             <span className={`text-sm ${isActive('/confirmed-orders') ? 'font-semibold' : 'font-medium'}`}>{t('confirmedOrders')}</span>
           </button>
-
+)}
+{(user.role === 'hotels' || user.role === 'developer') && (
           <button 
             onClick={() => handleNavigation('/reports')}
             className={`w-full flex items-center px-3 py-2 sm:px-4 sm:py-3 rounded-lg transition-all duration-200 touch-target-responsive ${
@@ -248,7 +268,8 @@ export default function Sidebar({ onClose }) {
             </svg>
             <span className={`text-sm ${isActive('/reports') ? 'font-semibold' : 'font-medium'}`}>{t('reports')}</span>
           </button>
-          
+)}
+{/* {(user.role === 'developer') && ( */}
           <button 
             onClick={() => handleNavigation('/settings')}
             className={`w-full flex items-center px-3 py-2 sm:px-4 sm:py-3 rounded-lg transition-all duration-200 touch-target-responsive ${
@@ -263,6 +284,7 @@ export default function Sidebar({ onClose }) {
             </svg>
             <span className={`text-sm ${isActive('/settings') ? 'font-semibold' : 'font-medium'}`}>{t('settings')}</span>
           </button>
+{/* )} */}
         </nav>
         
         {/* User Info */}

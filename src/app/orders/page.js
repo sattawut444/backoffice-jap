@@ -788,8 +788,8 @@ export default function OrdersPage() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-600">
-                            <div>In: {formatDate(order.check_in)}</div>
-                            <div>Out: {formatDate(order.check_out)}</div>
+                            <div>In: {order.check_in}</div>
+                            <div>Out: {order.check_out}</div>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">

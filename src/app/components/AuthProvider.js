@@ -33,7 +33,7 @@ export function AuthProvider({ children }) {
         }
         
         // ตรวจสอบว่ามีข้อมูลที่จำเป็นครบถ้วน
-        if (!userObj.email || !userObj.hotel_id) {
+        if (!userObj.username || !userObj.hotel_id) {
           console.log('Incomplete user data, clearing authentication');
           removeCookie('authToken');
           removeCookie('user');
@@ -150,13 +150,13 @@ export function AuthProvider({ children }) {
       router.push('/login');
     }
     
-    // ถ้า login แล้วและอยู่ที่หน้า login ให้ redirect ไปหน้า dashboard
+    // ถ้า login แล้วและอยู่ที่หน้า login ให้ redirect ไปหน้า hotel-profile
     if (!isLoading && isAuthenticated && pathname === '/login') {
-      router.push('/');
+      router.push('/hotel-profile');
     }
   }, [isAuthenticated, pathname, isLoading, router]);
 
-  const login = (email, password, token, userData) => {
+  const login = (username, password, token, userData) => {
     if (token && userData) {
       // ตรวจสอบว่า token ไม่ใช่ demo token
       if (token.startsWith('demo-jwt-token-')) {
@@ -165,7 +165,7 @@ export function AuthProvider({ children }) {
       }
       
       // ตรวจสอบว่ามีข้อมูลที่จำเป็นครบถ้วน
-      if (!userData.email || !userData.hotel_id) {
+      if (!userData.username || !userData.hotel_id) {
         console.error('Incomplete user data for login');
         return false;
       }
@@ -181,6 +181,9 @@ export function AuthProvider({ children }) {
       if (userData.hotel_id) {
         fetchProfile(userData.hotel_id);
       }
+      
+      // Redirect to hotel-profile page after successful login
+      router.push('/hotel-profile');
       
       return true;
     }

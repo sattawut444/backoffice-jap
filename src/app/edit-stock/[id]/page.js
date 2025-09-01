@@ -12,8 +12,12 @@ export default function EditStockPage() {
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
+  const hotel_stock_id = searchParams.get('hotel_stock_id');
   const room_code = searchParams.get('room_code');
   const hotels_plans_id = searchParams.get('hotels_plans_id');
+  const day_use = searchParams.get('day_use');
+  const stock = searchParams.get('stock');
+  const all_room = searchParams.get('all_room');
   const { user } = useAuth();
   const { t } = useLanguage();
   const [loading, setLoading] = useState(true);
@@ -23,7 +27,7 @@ export default function EditStockPage() {
   const [formData, setFormData] = useState({
     hotel_stock_id: '',
     date: '',
-    stock: '',
+    stock: 0,
     status: 1
   });
 
@@ -38,7 +42,6 @@ export default function EditStockPage() {
     try {
       setLoading(true);
       setError(null);
-      
       // Add timeout for API call
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
@@ -48,7 +51,6 @@ export default function EditStockPage() {
       });
       
       clearTimeout(timeoutId);
-      
       if (!response.ok) {
         if (response.status === 404) {
           console.warn('Stock API endpoint not found, using demo data');
@@ -58,8 +60,9 @@ export default function EditStockPage() {
              hotel_stock_id: params.id,
              room_code: room_code || 'demo',
              hotels_plans_id: hotels_plans_id || '1',
-             date: '2024-12-12',
-             stock: '10',
+             date: day_use,
+             all_room: all_room||0,
+             stock: stock||0,
              status: 1
            };
            setStockData(demoData);
@@ -67,13 +70,14 @@ export default function EditStockPage() {
              hotel_stock_id: demoData.hotel_stock_id,
              date: demoData.date,
              stock: demoData.stock,
+             all_room: demoData.all_room,
              status: demoData.status
            });
           return;
         }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+      console.log('formData: ',formData);
              const result = await response.json();
        if (result.data) {
          const stockDataWithRoom = {
@@ -84,8 +88,9 @@ export default function EditStockPage() {
          setStockData(stockDataWithRoom);
          setFormData({
            hotel_stock_id: result.data.hotel_stock_id || params.id,
-           date: result.data.date || '',
-           stock: result.data.stock || '',
+           date: day_use || '',
+           stock: stock || '',
+           all_room: all_room || '',
            status: result.data.status || 1
          });
        } else {
@@ -280,7 +285,6 @@ export default function EditStockPage() {
                     required
                   />
                 </div>
-
                 {/* Stock */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-800 mb-2">Stock *</label>
@@ -291,7 +295,8 @@ export default function EditStockPage() {
                     onChange={handleInputChange}
                     className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800 placeholder-gray-500 transition-colors"
                     placeholder="Enter stock quantity"
-                    min="1"
+                    min='0'
+                    max={formData.all_room}
                     required
                   />
                 </div>

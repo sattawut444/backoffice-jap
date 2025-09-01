@@ -13,6 +13,9 @@ const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:3003';
 export default function AddStockPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [stockDate, setStockDate] = useState(null);
   const { user } = useAuth();
   const hotels_plans_id = searchParams.get('hotels_plans_id');
   const all_room = searchParams.get('all_room');
@@ -25,12 +28,87 @@ export default function AddStockPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    if (hotels_plans_id) {
+      fetchDateStock();
+    }
+  }, [hotels_plans_id]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
+  };
+
+  const fetchDateStock = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      // เพิ่ม timeout สำหรับ API call
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 วินาที timeout
+      const response = await fetch(`${API_BASE_URL}/api/hotels/backoffice/datestock/${hotels_plans_id}`, {
+        signal: controller.signal,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'GET'
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          console.warn('Orders API endpoint not found, using demo data');
+          // ใช้ demo data แทน
+          setStockDate([]);
+          return;
+        }
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      let stockDate = [];
+      if (result.data.length > 0) {
+        for(const i of result.data){
+          const date = i.date
+          stockDate.push({date:date})
+        }
+        setStockDate(stockDate);
+      }
+      console.log('stockDate:',stockDate);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const shouldDisableDate = (date) => {
+    if (!(date instanceof dayjs)) {
+      date = dayjs(date); // แปลงเป็น Day.js object
+    }
+    //ปิดวันที่ก่อนวันปัจจุบัน
+    if (!date || !date.isBefore) {
+      return true;
+    }
+    if (date.isBefore(dayjs(), "day")) {
+      return true;
+    }
+    // ถ้า stockRoom ยังไม่มีข้อมูล ให้ disable ทั้งหมด
+    if (!stockDate || !Array.isArray(stockDate)) {
+      return true;
+    }
+    const formattedDate = date.format("YYYY-MM-DD");
+    let dateData1 = false;
+    for(const i of stockDate){
+      let dateStock = dayjs(i.date)
+      const formatStockDate = dateStock.format("YYYY-MM-DD");
+      if(formatStockDate === formattedDate){
+        dateData1 = true;
+      }
+    }
+    return dateData1;
   };
 
   const handleSubmit = async (e) => {
@@ -180,6 +258,7 @@ export default function AddStockPage() {
                           }));
                         }}
                         minDate={dayjs()}
+                        shouldDisableDate={shouldDisableDate}
                         renderInput={(params) => (
                           <input
                             {...params.inputProps}
@@ -204,6 +283,7 @@ export default function AddStockPage() {
                           }));
                         }}
                         minDate={dayjs()}
+                        shouldDisableDate={shouldDisableDate}
                         renderInput={(params) => (
                           <input
                             {...params.inputProps}

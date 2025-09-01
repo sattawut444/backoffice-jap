@@ -326,7 +326,6 @@ export default function AddTypePage() {
                             required
                             >
                             <option value={"hotel"} className="text-700">Hotel</option>
-                            <option value={"museum"} className="text-700">Museum</option>
                           </select>
                           <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
                             <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

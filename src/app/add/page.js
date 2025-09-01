@@ -255,7 +255,7 @@ export default function AddPage() {
           <div className="flex items-center justify-between py-4">
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('addNewRoom')}</h1>
             <Link 
-              href="/profile"
+              href="/hotel-profile"
               className="flex items-center space-x-2 text-gray-700 hover:text-gray-900 transition-colors"
             >
               <div className="flex items-center justify-center w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors touch-target-responsive">

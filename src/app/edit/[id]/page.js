@@ -54,7 +54,7 @@ export default function EditPage() {
       const response = await fetch(`${API_BASE_URL}/api/hotels/backoffice/room/${user.hotel_id}`);
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP error! status: ${response.ok}`);
       }
       
       const result = await response.json();
@@ -234,7 +234,7 @@ export default function EditPage() {
         method: 'PUT',
         body: formDataToSend,
       });
-
+console.log('response: ',response.status);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

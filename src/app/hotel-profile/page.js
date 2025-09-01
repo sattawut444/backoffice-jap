@@ -27,7 +27,8 @@ export default function HotelProfilePage() {
     phone_number: '',
     address: '',
     detail: '',
-    email: ''
+    email: '',
+    google_maps_url: ''
   });
   const [selectedImages, setSelectedImages] = useState([]);
   const [uploadingImages, setUploadingImages] = useState(false);
@@ -96,23 +97,7 @@ export default function HotelProfilePage() {
       console.error('Error fetching hotel data:', error);
       if (error.name === 'AbortError') {
         console.warn('Hotel profile API request timed out, using demo data');
-        setHotelData({
-          id: 5,
-          name: "Hotel Regina Kawaguchiko (API Timeout)",
-          opening_hours: "24 hours a day",
-          category: "Hotel",
-          type: "hotel",
-          facilities: "24-hour reception, Sulfate spring, Calcium spring, breakfast, Laundry service, Parking included, air conditioner, Wi-Fi",
-          phone_number: "81555209000",
-          address: "5239-1 Funatsu, Fujikawaguchiko, Minamitsuru District, Yamanashi 401-0301 Japan",
-          detail: "※The service may be suspended depending on road conditions.\n※The shuttle bus to Fuji-Q Highland does not arrive at Fuji-Q high land station (the second entrance).\nIt arrives at Fuji-Q high land highway bus stop.(First entrance.)\n※We cannot keep your luggage at the station and the bus stop.\n※The service after check-out is only available for morning flights.\nThe service in the afternoon is only available for the guests who will check in and staying the hotel.\nWe cannot keep your luggage after checking out.\n※Please note that groups of passengers may be refused boarding or may not be allowed to board the same buses.\n※Click here for other information",
-          created_at: "2025-07-02T08:32:14.000Z",
-          updated_at: "2025-07-02T08:32:14.000Z",
-                      image: [
-              "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&h=600&fit=crop",
-              "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800&h=600&fit=crop"
-            ]
-        });
+        setHotelData();
       } else {
         setError('Failed to fetch hotel data. Please try again.');
       }
@@ -182,7 +167,8 @@ export default function HotelProfilePage() {
       phone_number: hotelData.phone_number || '',
       address: hotelData.address || '',
       detail: hotelData.detail || '',
-      email: hotelData.email || ''
+      email: hotelData.email || '',
+      google_maps_url: hotelData.google_maps_url || ''
     });
     setIsEditing(true);
     setSuccess(false);
@@ -350,7 +336,8 @@ export default function HotelProfilePage() {
         address: editFormData.address,
         detail: editFormData.detail,
         facilities: editFormData.facilities,
-        phone_number: editFormData.phone_number
+        phone_number: editFormData.phone_number,
+        google_maps_url: editFormData.google_maps_url
       };
       
       const response = await fetch(`${API_BASE_URL}/api/hotels/backoffice/updateprofilehotel`, {
@@ -642,7 +629,7 @@ export default function HotelProfilePage() {
                       ) : (
                         <div>
                           <h2 className="text-2xl font-bold text-gray-900 mb-2">{hotelData.name}</h2>
-                          <p className="text-gray-600">{hotelData.category} • {hotelData.type}</p>
+                          <p className="text-gray-600">{user.role}</p>
                         </div>
                       )}
                     </div>
@@ -788,6 +775,54 @@ export default function HotelProfilePage() {
                      />
                    ) : (
                      <p className="text-gray-700 leading-relaxed">{hotelData.address}</p>
+                   )}
+                 </div>
+
+                                 {/* Google Maps URL Section */}
+                 <div className="bg-white rounded-lg shadow-sm border p-6">
+                   <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                     <svg className="w-5 h-5 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3" />
+                     </svg>
+                     Google Maps
+                   </h3>
+                   {isEditing ? (
+                     <div className="space-y-3">
+                       <input
+                         type="url"
+                         name="google_maps_url"
+                         value={editFormData.google_maps_url}
+                         onChange={handleInputChange}
+                         placeholder="https://maps.google.com/..."
+                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700"
+                       />
+                       <p className="text-sm text-gray-500">
+                         Enter the Google Maps URL for your hotel location
+                       </p>
+                     </div>
+                   ) : (
+                     <div className="space-y-3">
+                       {hotelData.google_maps_url ? (
+                         <div className="space-y-2">
+                           <a
+                             href={hotelData.google_maps_url}
+                             target="_blank"
+                             rel="noopener noreferrer"
+                             className="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-800 transition-colors"
+                           >
+                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                             </svg>
+                             <span>View on Google Maps</span>
+                           </a>
+                           <p className="text-sm text-gray-600 break-all">
+                             {hotelData.google_maps_url}
+                           </p>
+                         </div>
+                       ) : (
+                         <p className="text-gray-500">No Google Maps URL provided</p>
+                       )}
+                     </div>
                    )}
                  </div>
 
